@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💘 Walentynkowa Misja</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:'Poppins',sans-serif;background:radial-gradient(circle at top,#ffb6c1,#ff4b6e);height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+
+.card{background:rgba(255,255,255,.95);width:95%;max-width:380px;min-height:430px;border-radius:25px;box-shadow:0 20px 40px rgba(0,0,0,.25);padding:20px;text-align:center;animation:fadeIn .8s ease}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.screen{display:none}
+.active{display:block}
+
+button{width:100%;padding:14px;border:none;border-radius:15px;font-size:17px;font-weight:600}
+.primary{background:linear-gradient(135deg,#ff416c,#ff4b2b);color:white}
+.secondary{background:linear-gradient(135deg,#6c63ff,#4facfe);color:white}
+.yes{background:linear-gradient(135deg,#2ecc71,#27ae60);color:white}
+.no{background:linear-gradient(135deg,#ff7675,#d63031);color:white;margin-top:10px}
+
+.progress{height:8px;background:#eee;border-radius:10px;margin-bottom:10px;overflow:hidden}
+.bar{height:100%;width:0;background:linear-gradient(90deg,#ff4b6e,#ff9a9e);transition:.5s}
+
+.float-hearts span{position:absolute;font-size:20px;animation:float 6s linear infinite;opacity:.6}
+@keyframes float{0%{transform:translateY(100vh)}100%{transform:translateY(-20vh)}}
+
+.heartBtn{display:inline-block;margin:10px;font-size:30px;animation:pulse 1.2s infinite}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+
+.iconRow img{width:55px;margin:5px}
+.roseField span{font-size:28px;margin:3px;animation:pulse 1.5s infinite}
+
+input{width:100%;padding:12px;border-radius:12px;border:1px solid #ccc;margin-top:10px;font-size:16px;text-align:center}
+
+.shake{animation:shake .3s}
+@keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-5px)}100%{transform:translateX(0)}}
+
+.success{animation:success .6s}
+@keyframes success{0%{transform:scale(.9)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+
+.puzzle{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:15px}
+.tile{width:100%;aspect-ratio:1;background-image:url('foto.jpg');background-size:300% 300%;border-radius:12px}
+
+.confetti{position:absolute;font-size:22px;animation:fall 3s linear forwards}
+@keyframes fall{0%{transform:translateY(-20px)}100%{transform:translateY(110vh)}}
+</style>
+</head>
+<body>
+
+<div class="float-hearts"></div>
+
+<div class="card">
+<div class="progress"><div class="bar" id="bar"></div></div>
+
+<!-- START -->
+<div class="screen active" id="s1">
+<h2>🎯 Zostałaś wybrana do specjalnej misji</h2>
+<button class="primary" onclick="go(1,2,20)">START</button>
+</div>
+
+<!-- TASK 1 -->
+<div class="screen" id="s2">
+<h2>❤️ Zadanie 1</h2>
+<p>Kliknij serduszka od najmniejszego do największego</p>
+<div>
+<span class="heartBtn" data-v="1" style="font-size:18px">❤️</span>
+<span class="heartBtn" data-v="3" style="font-size:45px">❤️</span>
+<span class="heartBtn" data-v="2" style="font-size:30px">❤️</span>
+</div>
+<p id="err1" style="color:red;display:none">Zła kolejność!</p>
+</div>
+
+<!-- TASK 2 -->
+<div class="screen" id="s3">
+<h2>🔐 Zadanie 2 — Sejf</h2>
+<p>Odgadnij kod:</p>
+<div class="iconRow">
+<img src="https://cdn-icons-png.flaticon.com/512/616/616408.png">
+<img src="https://cdn-icons-png.flaticon.com/512/1998/1998627.png">
+<img src="https://cdn-icons-png.flaticon.com/512/1998/1998592.png">
+</div>
+<div class="iconRow">
+<img src="https://cdn-icons-png.flaticon.com/512/747/747310.png">
+<img src="https://cdn-icons-png.flaticon.com/512/833/833472.png">
+</div>
+<p>Policz róże:</p>
+<div class="roseField" id="roses"></div>
+<input id="code" placeholder="Wpisz kod">
+<button class="secondary" onclick="checkCode()">OTWÓRZ</button>
+<p id="err2" style="color:red;display:none">Błędny kod!</p>
+</div>
+
+<!-- TASK 3 -->
+<div class="screen" id="s4">
+<h2>🧠 Zadanie 3 — Zapamiętaj sekwencję</h2>
+<p>Zapamiętaj kolejność serduszek i kliknij je w tej samej kolejności</p>
+<div id="memoryBoard" style="display:flex;justify-content:center;gap:15px;margin-top:20px">
+<div class="memHeart" data-id="1">❤️</div>
+<div class="memHeart" data-id="2">❤️</div>
+<div class="memHeart" data-id="3">❤️</div>
+<div class="memHeart" data-id="4">❤️</div>
+</div>
+<button class="secondary" onclick="startMemory()">START SEKWENCJI</button>
+<p id="err3" style="color:red;display:none">Zła kolejność!</p>
+</div>
+
+<!-- QUESTION -->
+<div class="screen" id="s5">
+<h2>🥺 Czy zostaniesz moją walentynką?</h2>
+<p style="font-size:30px">👉🥺👈</p>
+<button class="yes" onclick="finish()">TAK</button>
+<button class="no" id="noBtn">NIE</button>
+</div>
+
+<!-- FINAL -->
+<div class="screen" id="s6">
+<h2>🎉 Gratulacje!</h2>
+<p>Uczyniłaś mnie najszczęśliwszym człowiekiem na świecie ❤️</p>
+</div>
+
+</div>
+
+<script>
+// floating hearts
+const fh=document.querySelector('.float-hearts');
+for(let i=0;i<12;i++){let s=document.createElement('span');s.innerHTML='❤️';s.style.left=Math.random()*100+'vw';s.style.animationDuration=4+Math.random()*4+'s';fh.appendChild(s)}
+
+function go(a,b,p){document.getElementById('s'+a).classList.remove('active');document.getElementById('s'+b).classList.add('active');document.getElementById('bar').style.width=p+'%'}
+
+// TASK 1
+let order=1;
+document.querySelectorAll('.heartBtn').forEach(h=>{h.onclick=()=>{if(+h.dataset.v===order){h.classList.add('success');order++;if(order===4){go(2,3,40)}}else{order=1;document.getElementById('err1').style.display='block';h.classList.add('shake');setTimeout(()=>h.classList.remove('shake'),300);document.querySelectorAll('.heartBtn').forEach(x=>x.style.opacity=1)}}})
+
+// TASK 2
+const roses=document.getElementById('roses');
+for(let i=0;i<7;i++){let r=document.createElement('span');r.innerHTML='🌹';roses.appendChild(r)}
+function checkCode(){if(document.getElementById('code').value==='5147'){document.getElementById('s3').classList.add('success');go(3,4,65)}else{document.getElementById('err2').style.display='block';document.getElementById('code').classList.add('shake');setTimeout(()=>document.getElementById('code').classList.remove('shake'),300)}}
+
+// MEMORY GAME
+let sequence = [];
+let playerSeq = [];
+let playing = false;
+
+const memHearts = document.querySelectorAll('.memHeart');
+memHearts.forEach(h=>{
+ h.style.fontSize='36px';
+ h.style.cursor='pointer';
+ h.onclick = () => {
+  if(!playing) return;
+  const id = h.dataset.id;
+  playerSeq.push(id);
+  h.classList.add('success');
+  setTimeout(()=>h.classList.remove('success'),300);
+
+  if(playerSeq[playerSeq.length-1] != sequence[playerSeq.length-1]){
+    document.getElementById('err3').style.display='block';
+    playerSeq=[];
+    playing=false;
+    return;
+  }
+
+  if(playerSeq.length === sequence.length){
+    document.getElementById('s4').classList.add('success');
+    go(4,5,85);
+  }
+ }
+});
+
+function startMemory(){
+ sequence = [];
+ playerSeq = [];
+ playing = false;
+ document.getElementById('err3').style.display='none';
+
+ for(let i=0;i<4;i++){
+  sequence.push(String(Math.floor(Math.random()*4)+1));
+ }
+
+ let i=0;
+ const interval = setInterval(()=>{
+  const el = document.querySelector(`.memHeart[data-id='${sequence[i]}']`);
+  el.classList.add('success');
+  setTimeout(()=>el.classList.remove('success'),400);
+  i++;
+  if(i>=sequence.length){
+    clearInterval(interval);
+    playing=true;
+  }
+ },700);
+}
+
+// NO BUTTON
+const noBtn=document.getElementById('noBtn');
+noBtn.onclick=()=>{noBtn.classList.add('shake');setTimeout(()=>noBtn.classList.remove('shake'),300)}
+
+// FINAL + CONFETTI
+function finish(){go(5,6,100);
+for(let i=0;i<50;i++){let c=document.createElement('div');c.className='confetti';c.innerHTML='🎉';c.style.left=Math.random()*100+'vw';document.body.appendChild(c);setTimeout(()=>c.remove(),3000)}}
+</script>
+</body>
+</html>
